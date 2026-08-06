@@ -1,0 +1,126 @@
+---
+eleventyNavigation:
+  key: 04.01 Books
+  order: 4.01
+  parent: 04 Logs
+---
+<header class="books-hero">
+	<div class="books-hero__content">
+		<p class="books-hero__eyebrow">Media Logs</p>
+		<h1>The Library</h1>
+	</div>
+</header>
+
+<p>I’ve always been a big reader and can average about a book a week (more when we throw comics in the mix.) But as I get older, it’s hard for things to not start to blur together, so I started keeping a list.</p>
+
+<p>Rather than use reading trackers that have distracting social media components, I opted to keep it here on my blog. In each book you’ll find a synopsis and some notes on what I thought of it. Don’t think of these as book reviews — they are far more stream of conscious and sometimes contain mild spoilers.</p>
+
+
+<hr>
+
+{% set postslist = collections.books %}
+
+<div class="books-filters">
+	<label>
+		<span>Genre</span>
+		<select id="genre-filter">
+			<option value="all">All genres</option>
+		</select>
+	</label>
+	<label>
+		<span>Finished year</span>
+		<select id="year-filter">
+			<option value="all">All years</option>
+		</select>
+	</label>
+</div>
+
+<div class="books-grid" id="books-grid">
+	{%- for post in postslist | reverse %}
+		{% set shelfText = post.data.shelf | stringifyValue %}
+		{% set shelfValue = shelfText | lower %}
+		{% set shelfClass = '' %}
+		{% if shelfValue == 'finished' or shelfValue == 'complete' or shelfValue == 'completed' %}
+			{% set shelfClass = 'shelf-badge--finished' %}
+		{% elseif shelfValue == 'reading' or shelfValue == 'currently-reading' or shelfValue == 'currently reading' %}
+			{% set shelfClass = 'shelf-badge--reading' %}
+		{% elseif shelfValue == 'tbr' or shelfValue == 'to-be-read' or shelfValue == 'to be read' %}
+			{% set shelfClass = 'shelf-badge--tbr' %}
+		{% elseif shelfValue == 'dnf' or shelfValue == 'did-not-finish' or shelfValue == 'did not finish' %}
+			{% set shelfClass = 'shelf-badge--dnf' %}
+		{% endif %}
+		{% set coverImageSource = post.data.coverImage | default('') %}
+		{% set coverImagePath = '' %}
+		{% if coverImageSource %}
+			{% if coverImageSource.startsWith('/') or coverImageSource.startsWith('http://') or coverImageSource.startsWith('https://') %}
+				{% set coverImagePath = coverImageSource %}
+			{% elif coverImageSource[0] == '.' %}
+				{% set coverImagePath = post.url ~ coverImageSource | replace('./', '') %}
+			{% else %}
+				{% set coverImagePath = post.url ~ 'images/' ~ coverImageSource %}
+			{% endif %}
+		{% endif %}
+		{% set genreText = (post.data.genre or post.data.genres) | stringifyValue %}
+		{% set completedText = post.data.completed | stringifyValue %}
+		{% if coverImagePath %}
+		<article class="book-card" data-genre="{{ genreText | default('uncategorized', true) | lower }}" data-year="{{ completedText }}">
+			<a href="{{ post.url | safe }}" class="book-card-link" aria-label="Open {{ post.data.title }}">
+				<div class="book-card-image">
+					<img src="{{ coverImagePath | safe }}" alt="{{ post.data.title }} cover" eleventy:ignore>
+					{% if shelfText %}
+					<span class="shelf-badge {{ shelfClass }}">{{ shelfText }}</span>
+					{% endif %}
+				</div>
+			</a>
+		</article>
+		{% endif %}
+	{%- endfor %}
+</div>
+
+<script>
+	(function () {
+		const cards = Array.from(document.querySelectorAll('.book-card'));
+		const genreFilter = document.getElementById('genre-filter');
+		const yearFilter = document.getElementById('year-filter');
+
+		if (!genreFilter || !yearFilter || !cards.length) return;
+
+		const genres = new Set();
+		const years = new Set();
+		cards.forEach((card) => {
+			const genre = card.dataset.genre || 'uncategorized';
+			const year = card.dataset.year || 'unknown';
+			genres.add(genre);
+			years.add(year);
+		});
+
+		[...genres].sort().forEach((genre) => {
+			const option = document.createElement('option');
+			option.value = genre;
+			option.textContent = genre.charAt(0).toUpperCase() + genre.slice(1);
+			genreFilter.appendChild(option);
+		});
+
+		[...years].filter(Boolean).sort((a, b) => Number(b) - Number(a)).forEach((year) => {
+			const option = document.createElement('option');
+			option.value = year;
+			option.textContent = year;
+			yearFilter.appendChild(option);
+		});
+
+		const applyFilters = () => {
+			const selectedGenre = genreFilter.value;
+			const selectedYear = yearFilter.value;
+
+			cards.forEach((card) => {
+				const matchesGenre = selectedGenre === 'all' || card.dataset.genre === selectedGenre;
+				const matchesYear = selectedYear === 'all' || card.dataset.year === selectedYear;
+				card.style.display = matchesGenre && matchesYear ? '' : 'none';
+			});
+		};
+
+		genreFilter.addEventListener('change', applyFilters);
+		yearFilter.addEventListener('change', applyFilters);
+	})();
+</script>
+</div>

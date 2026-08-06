@@ -1,0 +1,38 @@
+views:
+  - type: cards
+    name: Covers
+    filters:
+      and:
+        - file.folder == "03 Bookshelf"
+    order:
+      - file.name
+      - cover
+    image: note.cover
+    imageAspectRatio: 1.6
+  - type: table
+    name: View
+  - type: table
+    name: View 2
+    filters:
+      and:
+        - file.inFolder("02 Bookshelf")
+    order:
+      - file.name
+      - media
+      - "isbn:"
+      - published
+      - "publisher:"
+      - "rating:"
+      - "read in:"
+      - "shelf:"
+      - "subjects:"
+      - "title:"
+      - "author:"
+      - "appeal factors:"
+      - "format:"
+      - "genre:"
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: View 3

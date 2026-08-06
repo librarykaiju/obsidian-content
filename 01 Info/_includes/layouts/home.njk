@@ -1,0 +1,14 @@
+---
+layout: layouts/base.njk
+---
+
+<main>
+
+{% include "partials/_welcome.njk" %}
+<div class="home-content">
+
+{% include "partials/_now-stickies.njk" %}
+
+  {{ content | safe }}
+</div>
+</main>

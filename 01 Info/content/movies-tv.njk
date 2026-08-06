@@ -1,0 +1,42 @@
+---
+layout: layouts/base2.njk
+permalink: /movies-tv/
+eleventyNavigation:
+  key: 04.03 Movies & TV
+  order: 4.03
+  parent: 04 Logs
+---
+<header class="movies-tv-hero">
+	<div class="books-hero__content">
+		<p class="books-hero__eyebrow">Media Logs</p>
+		<h1>Movies & TV</h1>
+	</div>
+</header>
+
+{% set postslist = collections.media %}
+
+<div class="books-grid" id="movies-tv-grid">
+	{%- for post in postslist | reverse %}
+		{% set coverImageSource = post.data.coverImage | default('') %}
+		{% set coverImagePath = '' %}
+		{% if coverImageSource %}
+			{% if coverImageSource.startsWith('/') or coverImageSource.startsWith('http://') or coverImageSource.startsWith('https://') %}
+				{% set coverImagePath = coverImageSource %}
+			{% elif coverImageSource.startsWith('./') %}
+				{% set coverImagePath = post.url ~ (coverImageSource | replace('./', '')) %}
+			{% else %}
+				{% set coverImagePath = post.url ~ 'images/' ~ coverImageSource %}
+			{% endif %}
+		{% endif %}
+
+		{% if coverImagePath %}
+		<article class="book-card">
+			<a href="{{ post.url }}" class="book-card-link" aria-label="Open {{ post.data.title }}">
+				<div class="book-card-image">
+					<img src="{{ coverImagePath }}" alt="{{ post.data.title }} cover">
+				</div>
+			</a>
+		</article>
+		{% endif %}
+	{%- endfor %}
+</div>

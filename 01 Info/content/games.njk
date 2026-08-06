@@ -1,0 +1,17 @@
+---
+layout: layouts/base2.njk
+eleventyNavigation:
+  key: 04.02 Games
+  order: 4.02
+  parent: 04 Logs
+---
+<header class="games-hero">
+  <div class="books-hero__content">
+    <p class="books-hero__eyebrow">Media Logs</p>
+    <h1>Games</h1>
+  </div>
+</header>
+
+{% set postslist = collections.games %}
+{% set postslistVariant = 'cartridges' %}
+{% include "postslist.njk" %}
